@@ -1,0 +1,232 @@
+diff --git a/arch/arm64/configs/gki_defconfig b/arch/arm64/configs/gki_defconfig
+index 9a4a6307d2d3..2323038e5e33 100644
+--- a/arch/arm64/configs/gki_defconfig
++++ b/arch/arm64/configs/gki_defconfig
+@@ -30,7 +30,7 @@ CONFIG_CPUSETS=y
+ CONFIG_CGROUP_CPUACCT=y
+ CONFIG_CGROUP_BPF=y
+ CONFIG_NAMESPACES=y
+-# CONFIG_PID_NS is not set
++CONFIG_PID_NS=y
+ CONFIG_RT_SOFTINT_OPTIMIZATION=y
+ # CONFIG_RD_BZIP2 is not set
+ # CONFIG_RD_LZMA is not set
+@@ -38,7 +38,7 @@ CONFIG_RT_SOFTINT_OPTIMIZATION=y
+ # CONFIG_RD_LZO is not set
+ CONFIG_BOOT_CONFIG=y
+ # CONFIG_SYSFS_SYSCALL is not set
+-# CONFIG_FHANDLE is not set
++CONFIG_FHANDLE=y
+ CONFIG_KALLSYMS_ALL=y
+ CONFIG_USERFAULTFD=y
+ # CONFIG_RSEQ is not set
+@@ -66,7 +66,7 @@ CONFIG_ARM64_MPAM=y
+ CONFIG_RANDOMIZE_BASE=y
+ # CONFIG_RANDOMIZE_MODULE_REGION_FULL is not set
+ CONFIG_UNWIND_PATCH_PAC_INTO_SCS=y
+-CONFIG_CMDLINE="console=ttynull stack_depot_disable=on cgroup_disable=pressure kasan.page_alloc.sample=10 kasan.stacktrace=off bootconfig ioremap_guard kvm-arm.mode=protected"
++CONFIG_CMDLINE="console=ttyGS0,115200 stack_depot_disable=on cgroup_disable=pressure kasan.page_alloc.sample=10 kasan.stacktrace=off bootconfig ioremap_guard kvm-arm.mode=nvhe"
+ CONFIG_CMDLINE_EXTEND=y
+ # CONFIG_DMI is not set
+ CONFIG_PM_WAKELOCKS=y
+@@ -105,7 +105,7 @@ CONFIG_MODULE_UNLOAD=y
+ CONFIG_MODVERSIONS=y
+ CONFIG_MODULE_SCMVERSION=y
+ CONFIG_MODULE_SIG=y
+-CONFIG_MODULE_SIG_PROTECT=y
++CONFIG_MODULE_SIG_PROTECT=n
+ CONFIG_MODPROBE_PATH="/system/bin/modprobe"
+ CONFIG_BLK_DEV_ZONED=y
+ CONFIG_BLK_CGROUP_IOCOST=y
+@@ -514,6 +514,10 @@ CONFIG_USB_DWC3=y
+ CONFIG_USB_SERIAL=m
+ CONFIG_USB_SERIAL_FTDI_SIO=m
+ CONFIG_USB_GADGET=y
++CONFIG_USB_GADGETFS=y
++CONFIG_USB_G_SERIAL=y
++CONFIG_USB_U_SERIAL=y
++CONFIG_U_SERIAL_CONSOLE=y
+ CONFIG_USB_CONFIGFS=y
+ CONFIG_USB_CONFIGFS_UEVENT=y
+ CONFIG_USB_CONFIGFS_SERIAL=y
+diff --git a/arch/x86/configs/gki_defconfig b/arch/x86/configs/gki_defconfig
+index 8def80342acc..2c2d2ff92e42 100644
+--- a/arch/x86/configs/gki_defconfig
++++ b/arch/x86/configs/gki_defconfig
+@@ -92,7 +92,7 @@ CONFIG_MODULE_UNLOAD=y
+ CONFIG_MODVERSIONS=y
+ CONFIG_MODULE_SCMVERSION=y
+ CONFIG_MODULE_SIG=y
+-CONFIG_MODULE_SIG_PROTECT=y
++CONFIG_MODULE_SIG_PROTECT=n
+ CONFIG_BLK_DEV_ZONED=y
+ CONFIG_BLK_CGROUP_IOCOST=y
+ CONFIG_BLK_CGROUP_IOPRIO=y
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index ffcbe2bc460e..2e2dab766aa8 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -30,6 +30,7 @@ config UEVENT_HELPER_PATH
+ 
+ config DEVTMPFS
+ 	bool "Maintain a devtmpfs filesystem to mount at /dev"
++	default y
+ 	help
+ 	  This creates a tmpfs/ramfs filesystem instance early at bootup.
+ 	  In this filesystem, the kernel driver core maintains device
+diff --git a/drivers/usb/gadget/Kconfig b/drivers/usb/gadget/Kconfig
+index bc2cfb4ab23d..f65345c73b78 100644
+--- a/drivers/usb/gadget/Kconfig
++++ b/drivers/usb/gadget/Kconfig
+@@ -132,6 +132,7 @@ config USB_GADGET_STORAGE_NUM_BUFFERS
+ config U_SERIAL_CONSOLE
+ 	bool "Serial gadget console support"
+ 	depends on USB_U_SERIAL
++	default y
+ 	help
+ 	   It supports the serial gadget can be used as a console.
+ 
+@@ -154,6 +155,7 @@ config USB_F_SS_LB
+ 	tristate
+ 
+ config USB_U_SERIAL
++	default y
+ 	tristate
+ 
+ config USB_U_ETHER
+diff --git a/drivers/usb/gadget/legacy/Kconfig b/drivers/usb/gadget/legacy/Kconfig
+index de6668e58481..f4ddd54acfab 100644
+--- a/drivers/usb/gadget/legacy/Kconfig
++++ b/drivers/usb/gadget/legacy/Kconfig
+@@ -205,6 +205,7 @@ config USB_G_NCM
+ 
+ config USB_GADGETFS
+ 	tristate "Gadget Filesystem"
++	default y
+ 	help
+ 	  This driver provides a filesystem based API that lets user mode
+ 	  programs implement a single-configuration USB device, including
+@@ -291,6 +292,7 @@ config USB_GADGET_TARGET
+ config USB_G_SERIAL
+ 	tristate "Serial Gadget (with CDC ACM and CDC OBEX support)"
+ 	depends on TTY
++	default y
+ 	select USB_U_SERIAL
+ 	select USB_F_ACM
+ 	select USB_F_SERIAL
+diff --git a/fs/Kconfig b/fs/Kconfig
+index fd3cd36bdf46..5df6004cdb9b 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -179,6 +179,7 @@ config TMPFS
+ config TMPFS_POSIX_ACL
+ 	bool "Tmpfs POSIX Access Control Lists"
+ 	depends on TMPFS
++	default y
+ 	select TMPFS_XATTR
+ 	select FS_POSIX_ACL
+ 	help
+@@ -197,7 +198,7 @@ config TMPFS_POSIX_ACL
+ config TMPFS_XATTR
+ 	bool "Tmpfs extended attributes"
+ 	depends on TMPFS
+-	default n
++	default y
+ 	help
+ 	  Extended attributes are name:value pairs associated with inodes by
+ 	  the kernel or by users (see the attr(5) manual page for details).
+diff --git a/fs/autofs/Kconfig b/fs/autofs/Kconfig
+index 3b3a6b1423c6..88befba9aedf 100644
+--- a/fs/autofs/Kconfig
++++ b/fs/autofs/Kconfig
+@@ -12,7 +12,7 @@ config AUTOFS4_FS
+ 
+ config AUTOFS_FS
+ 	tristate "Kernel automounter support (supports v3, v4 and v5)"
+-	default n
++	default y
+ 	help
+ 	   The automounter is a tool to automatically mount remote file systems
+ 	   on demand. This implementation is partially kernel-based to reduce
+diff --git a/init/Kconfig b/init/Kconfig
+index 57a8e6746a42..96af034163f6 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1006,7 +1006,7 @@ config FAIR_GROUP_SCHED
+ config CFS_BANDWIDTH
+ 	bool "CPU bandwidth provisioning for FAIR_GROUP_SCHED"
+ 	depends on FAIR_GROUP_SCHED
+-	default n
++	default y
+ 	help
+ 	  This option allows users to define CPU bandwidth rates (limits) for
+ 	  tasks running within the fair group scheduler.  Groups with no limit
+@@ -1120,6 +1120,7 @@ config PROC_PID_CPUSET
+ 
+ config CGROUP_DEVICE
+ 	bool "Device controller"
++	default y
+ 	help
+ 	  Provides a cgroup controller implementing whitelists for
+ 	  devices which a process in the cgroup can mknod or open.
+@@ -1223,7 +1224,7 @@ config IPC_NS
+ 
+ config USER_NS
+ 	bool "User namespace"
+-	default n
++	default y
+ 	help
+ 	  This allows containers, i.e. vservers, to use user namespaces
+ 	  to provide different user info for different servers.
+@@ -2211,6 +2212,7 @@ config MODULE_SIG_FORCE
+ 
+ config MODULE_SIG_PROTECT
+ 	bool "Android GKI module protection"
++	default n
+ 	depends on MODULE_SIG && !MODULE_SIG_FORCE
+ 	help
+ 	  Enables Android GKI symbol protection support.
+diff --git a/kernel/bpf/Kconfig b/kernel/bpf/Kconfig
+index a82d6de86522..937df699b378 100644
+--- a/kernel/bpf/Kconfig
++++ b/kernel/bpf/Kconfig
+@@ -76,6 +76,7 @@ source "kernel/bpf/preload/Kconfig"
+ 
+ config BPF_LSM
+ 	bool "Enable BPF LSM Instrumentation"
++	default y
+ 	depends on BPF_EVENTS
+ 	depends on BPF_SYSCALL
+ 	depends on SECURITY
+diff --git a/net/Kconfig b/net/Kconfig
+index 76a3385943e5..fbfb2bc24adc 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -187,6 +187,7 @@ config NETFILTER_ADVANCED
+ 
+ config BRIDGE_NETFILTER
+ 	tristate "Bridged IP/ARP packets filtering"
++	default y
+ 	depends on BRIDGE
+ 	depends on NETFILTER && INET
+ 	depends on NETFILTER_ADVANCED
+@@ -284,6 +285,7 @@ config CGROUP_NET_PRIO
+ 
+ config CGROUP_NET_CLASSID
+ 	bool "Network classid cgroup"
++	default y
+ 	depends on CGROUPS
+ 	select SOCK_CGROUP_DATA
+ 	help
+diff --git a/net/bridge/Kconfig b/net/bridge/Kconfig
+index 3c8ded7d3e84..bb74b8d9c732 100644
+--- a/net/bridge/Kconfig
++++ b/net/bridge/Kconfig
+@@ -5,6 +5,7 @@
+ 
+ config BRIDGE
+ 	tristate "802.1d Ethernet Bridging"
++	default y
+ 	select LLC
+ 	select STP
+ 	depends on IPV6 || IPV6=n

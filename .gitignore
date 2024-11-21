@@ -1,0 +1,6 @@
+init/target
+init/ramdisk
+pixel-stock-image/*.img
+out/*.img
+out/*.tar.gz
+rootfs/debian-rootfs

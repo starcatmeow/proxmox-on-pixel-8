@@ -1,0 +1,9 @@
+[package]
+name = "init"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = { version = "0.4.38", features = ["now", "std"], default-features = false }
+log = "0.4.22"
+syscalls = "0.6.18"
