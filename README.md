@@ -1,6 +1,6 @@
 # Proxmox on Pixel 8
 
-This project aims to run Proxmox on Pixel 8. Full tutorial can be found on TBD.
+This project aims to run Proxmox on Pixel 8. Full log is [here](https://www.linkedin.com/pulse/proxmox-ve-google-pixel-phone-dongruixuan-li-qmnxc).
 
 ## Environment setup
 
